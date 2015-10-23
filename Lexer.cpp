@@ -27,25 +27,32 @@ std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
     std::string item;
     const char* delim = " ";
     while (std::getline(ss, item, *delim)) {
+        if(item == "")
+            continue;
+        
         splittedText.push_back(item);
     }
     
-    
     std::vector<std::pair<Tokens, std::string>> tokens;
-    for(auto& i: splittedText) {
-        if(hasToken(i))
-            tokens.push_back(std::make_pair(keywords[i], i));
-        
-        else if(tokenIsName(i))
-            tokens.push_back(std::make_pair(t_name, i));
-        
-        else if(tokenIsNumeral(i))
-            tokens.push_back(std::make_pair(t_numeral, i));
-        
-        else
-            tokens.push_back(std::make_pair(t_err, i));
+    
+    if(input.find_first_not_of(' ') == std::string::npos) // if only spaces
+        tokens.push_back(std::make_pair(t_empty, ""));
+    else {
+        for(auto& i: splittedText) {
+            if(hasToken(i))
+                tokens.push_back(std::make_pair(keywords[i], i));
+            
+            else if(tokenIsName(i))
+                tokens.push_back(std::make_pair(t_name, i));
+            
+            else if(tokenIsNumeral(i))
+                tokens.push_back(std::make_pair(t_numeral, i));
+            
+            else
+                tokens.push_back(std::make_pair(t_name_error, i));
+        }
     }
-    //tokens.push_back(std::make_pair(t_end, "\n"));
+    tokens.push_back(std::make_pair(t_end, "\n"));
     
     return tokens;
     

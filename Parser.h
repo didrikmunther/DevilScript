@@ -27,6 +27,7 @@ public:
     std::string error(Stack* stack);
     
     void pushAritmethic(Stack* stack, Tokens currentOperator);
+    void pushCalculatedElement(Element* element, Stack* stack);
     
     std::vector<Tokens> expected;
     

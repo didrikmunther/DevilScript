@@ -27,7 +27,8 @@ int main(int argc, const char * argv[]) {
         std::getline(std::cin, input);
         if(input == "quit") break;
         
-        std::cout << parser.parse(lexer.lex(input), &stack, &lexer) << "\n";
+        std::string output = parser.parse(lexer.lex(input), &stack, &lexer);
+        std::cout << output << (output == "" ? "" : "\n");
     }
     
     return 0;

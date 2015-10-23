@@ -14,6 +14,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include "Lexer.h"
 
@@ -46,7 +47,14 @@ public:
     std::map<std::string, std::string> variables;
     
     bool hasVariable(std::string key) {
-        return variables.find(key) != variables.end();
+        bool toReturn = false;
+        for(auto& i: variables) {
+            toReturn |= !strcmp(i.first.c_str(), key.c_str());
+        }
+        
+        return toReturn;
+        
+        //return variables.find(key.c_str()) != variables.end();
     }
     
     void popTopElement() {

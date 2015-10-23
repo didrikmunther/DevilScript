@@ -16,8 +16,10 @@
 
 
 enum Tokens {
-    t_err = -2,
+    t_name_error = INT_MIN,
+    
     t_end = 0,
+    t_empty,
     t_name,
     t_equals,
     t_numeral,
