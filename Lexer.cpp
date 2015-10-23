@@ -45,7 +45,7 @@ std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
         else
             tokens.push_back(std::make_pair(t_err, i));
     }
-    tokens.push_back(std::make_pair(t_end, "\n"));
+    //tokens.push_back(std::make_pair(t_end, "\n"));
     
     return tokens;
     

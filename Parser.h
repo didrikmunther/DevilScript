@@ -24,6 +24,9 @@ public:
     std::string parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer);
     
     void expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer);
+    std::string error(Stack* stack);
+    
+    void pushAritmethic(Stack* stack, Tokens currentOperator);
     
     std::vector<Tokens> expected;
     

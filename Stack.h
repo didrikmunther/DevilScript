@@ -45,6 +45,10 @@ public:
     std::vector<Element*> elements;
     std::map<std::string, std::string> variables;
     
+    bool hasVariable(std::string key) {
+        return variables.find(key) != variables.end();
+    }
+    
     void popTopElement() {
         delete getElement(0);
         elements.pop_back();

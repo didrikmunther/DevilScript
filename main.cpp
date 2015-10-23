@@ -21,9 +21,6 @@ int main(int argc, const char * argv[]) {
     Parser parser;
     Stack stack;
     
-    //for(auto& i: lexer.lexString("var asdf ="))
-        //std::cout << i.second << " | " << i.first << "\n";
-    
     while(true) {
         std::cout << ">> ";
         std::string input = "";
