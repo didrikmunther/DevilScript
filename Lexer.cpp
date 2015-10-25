@@ -42,36 +42,6 @@ std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
         if(item == "")
             continue;
         
-        bool concatenated = false;
-        for(auto& i: allKeywords) {
-            auto pos = item.find(i);
-            if(pos != std::string::npos) {
-                concatenated = true;
-                
-                item.insert(pos, " ");
-                item.insert(pos + 2, " ");
-            }
-            
-            std::stringstream operatorsInString(item);
-            
-            //while(std::getline(<#basic_istream<_CharT, _Traits> &__is#>, <#basic_string<_CharT, _Traits, _Allocator> &__str#>, <#_CharT __dlm#>))
-        }
-        
-        if(concatenated) {
-            std::stringstream ss2(item);
-            std::string item2;
-            
-            while(std::getline(ss2, item2, *delim)) {
-                if(item2 == "")
-                    continue;
-                
-                item2.erase(std::remove_if(item2.begin(), item2.end(), isspace), item2.end());
-                splittedText.push_back(item2);
-            }
-            
-            continue;
-        }
-        
         splittedText.push_back(item);
     }
     
