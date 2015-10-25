@@ -28,7 +28,7 @@ enum Tokens {
     t_multi,
     t_divide,
     t_plus_tt,
-    
+    t_minus_tt,
 };
 
 class Lexer {

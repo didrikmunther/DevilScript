@@ -37,14 +37,14 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 stack->pushElement(new Element(stack->variables[i.second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
-                setExpected({t_equals, t_plus, t_minus, t_multi, t_divide, t_plus_tt});
+                setExpected({t_equals, t_plus, t_minus, t_multi, t_divide, t_plus_tt, t_minus_tt});
                 
                 break;
                 
             case t_numeral:
                 stack->pushElement(new Element(i.second));
                 pushAritmethic(stack, currentOperator);
-                setExpected({t_plus, t_minus, t_multi, t_divide ,t_plus_tt});
+                setExpected({t_plus, t_minus, t_multi, t_divide ,t_plus_tt, t_minus_tt});
                 
                 break;
                 
@@ -66,6 +66,12 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 setExpected({t_numeral, t_name});
                 break;
             
+            case t_minus_tt:
+                currentOperator = t_minus_tt;
+                
+                setExpected({t_numeral, t_name});
+                break;
+                
             case t_multi:
                 currentOperator = t_multi;
                 
@@ -138,6 +144,11 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_minus) {
         float other = stack->toFloat(-1);
         result = other - stack->toFloat(0);
+        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    }
+    if(currentOperator == t_minus_tt) {
+        float other = stack->toInt(-1);
+        result = other - stack->toInt(0) - stack->toInt(0);
         pushCalculatedElement(new Element(std::to_string(result)), stack);
     }
     

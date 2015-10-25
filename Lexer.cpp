@@ -20,6 +20,7 @@ Lexer::Lexer() {
                 {"*", Tokens::t_multi},
                 {"/", Tokens::t_divide},
                 {"++", Tokens::t_plus_tt},
+                {"--", Tokens::t_minus_tt},
                };
 }
 
