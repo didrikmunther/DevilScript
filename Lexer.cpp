@@ -46,7 +46,6 @@ std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
         for(auto& i: allKeywords) {
             auto pos = item.find(i);
             if(pos != std::string::npos) {
-                std::cout << "here" << "\n";
                 concatenated = true;
                 
                 item.insert(pos, " ");
@@ -55,7 +54,7 @@ std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
             
             std::stringstream operatorsInString(item);
             
-            while(std::getline(<#basic_istream<_CharT, _Traits> &__is#>, <#basic_string<_CharT, _Traits, _Allocator> &__str#>, <#_CharT __dlm#>))
+            //while(std::getline(<#basic_istream<_CharT, _Traits> &__is#>, <#basic_string<_CharT, _Traits, _Allocator> &__str#>, <#_CharT __dlm#>))
         }
         
         if(concatenated) {
