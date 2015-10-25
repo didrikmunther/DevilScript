@@ -16,8 +16,6 @@ Parser::Parser() {
 }
 
 std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
-    
-    //std::vector<Tokens> expTokens = {(Tokens)-1}; // Expect everything in the beginning
     expected = {t_name, t_numeral, t_equals};
     Tokens currentOperator = t_end;
     bool equals = false;
