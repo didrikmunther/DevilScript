@@ -15,15 +15,6 @@
 
 Lexer::Lexer() {
     keywords = {
-<<<<<<< HEAD
-                {"=", Tokens::t_equals},
-                {"+", Tokens::t_plus},
-                {"-", Tokens::t_minus},
-                {"*", Tokens::t_multi},
-                {"/", Tokens::t_divide},
-                {"++", Tokens::t_plus_tt},
-                {"--", Tokens::t_minus_tt},
-=======
                 {"file!", t_m_open_from_file},
                 {"print!", t_m_print},
                 {"=", t_equals},
@@ -35,7 +26,6 @@ Lexer::Lexer() {
                 {"(", t_openpar},
                 {")", t_closedpar},
                 {"+=", t_plus_equal},
->>>>>>> Malaxiz/master
                };
 }
 

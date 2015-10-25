@@ -39,25 +39,16 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
                 stack->pushElement(new Element(stack->variables[i->second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
-<<<<<<< HEAD
-                setExpected({t_equals, t_plus, t_minus, t_multi, t_divide, t_plus_tt, t_minus_tt});
-=======
                 setExpected(lexer->getArithmeticOperators());
                 expected.push_back(t_equals);
                 expected.push_back(t_plus_equal);
->>>>>>> Malaxiz/master
                 
                 break;
                 
             case t_numeral:
                 stack->pushElement(new Element(i->second));
                 pushAritmethic(stack, currentOperator);
-<<<<<<< HEAD
-                setExpected({t_plus, t_minus, t_multi, t_divide ,t_plus_tt, t_minus_tt});
-                
-=======
                 setExpected(lexer->getArithmeticOperators());
->>>>>>> Malaxiz/master
                 break;
                 
             case t_div:
@@ -78,18 +69,6 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
                 stack->clearStack();
                 return {""};
                 break;
-<<<<<<< HEAD
-            
-            case t_minus_tt:
-                currentOperator = t_minus_tt;
-                
-                setExpected({t_numeral, t_name});
-                break;
-                
-            case t_multi:
-                currentOperator = t_multi;
-=======
->>>>>>> Malaxiz/master
                 
             case t_end:
                 break;
@@ -185,22 +164,9 @@ void Parser::pushCalculatedElement(Element* element, Stack* stack) {
 void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_end) return;
     
-<<<<<<< HEAD
-    if(currentOperator == t_minus) {
-        float other = stack->toFloat(-1);
-        result = other - stack->toFloat(0);
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
-    }
-    if(currentOperator == t_minus_tt) {
-        float other = stack->toInt(-1);
-        result = other - stack->toInt(0) - stack->toInt(0);
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
-    }
-=======
     float result = INT_MIN;
     float a1 = stack->toFloat(-1);
     float a2 = stack->toFloat(0);
->>>>>>> Malaxiz/master
     
     switch(currentOperator) {
             

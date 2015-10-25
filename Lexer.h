@@ -28,17 +28,11 @@ enum Tokens {
     t_plus,
     t_minus,
     t_multi,
-<<<<<<< HEAD
-    t_divide,
-    t_plus_tt,
-    t_minus_tt,
-=======
     t_raised,
     t_div,
     t_openpar,
     t_closedpar,
     t_plus_equal
->>>>>>> Malaxiz/master
 };
 
 class Lexer {
