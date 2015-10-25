@@ -37,19 +37,37 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 stack->pushElement(new Element(stack->variables[i.second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
-                setExpected({t_equals, t_plus});
+                setExpected({t_equals, t_plus, t_minus, t_multi, t_divide});
                 
                 break;
                 
             case t_numeral:
                 stack->pushElement(new Element(i.second));
                 pushAritmethic(stack, currentOperator);
-                setExpected({t_plus});
+                setExpected({t_plus, t_minus, t_multi, t_divide});
                 
                 break;
                 
             case t_plus:
                 currentOperator = t_plus;
+                
+                setExpected({t_numeral, t_name});
+                break;
+            
+            case t_minus:
+                currentOperator = t_minus;
+                
+                setExpected({t_numeral, t_name});
+                break;
+            
+            case t_multi:
+                currentOperator = t_multi;
+                
+                setExpected({t_numeral, t_name});
+                break;
+                
+            case t_divide:
+                currentOperator = t_divide;
                 
                 setExpected({t_numeral, t_name});
                 break;
@@ -102,11 +120,29 @@ void Parser::pushCalculatedElement(Element* element, Stack* stack) {
 }
 
 void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
-    int result = 0;
+    float result = 0;
     
     if(currentOperator == t_plus) {
-        int other = stack->toInt(-1);
+        float other = stack->toInt(-1);
         result = stack->toInt(0) + other;
+        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    }
+    
+    if(currentOperator == t_minus) {
+        float other = stack->toFloat(-1);
+        result = other - stack->toFloat(0);
+        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    }
+    
+    if(currentOperator == t_multi) {
+        float other = stack->toFloat(-1);
+        result = other * stack->toFloat(0);
+        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    }
+    
+    if(currentOperator == t_divide) {
+        float other = stack->toFloat(-1);
+        result = other / stack->toFloat(0);
         pushCalculatedElement(new Element(std::to_string(result)), stack);
     }
 }
