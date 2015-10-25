@@ -7,11 +7,25 @@
 //
 
 #include <iostream>
+<<<<<<< HEAD
 #include <fstream>
+=======
+#include <vector>
+
+>>>>>>> Malaxiz/master
 #include "Lexer.h"
 #include "Parser.h"
 #include "Stack.h"
 
+
+void executeLine(Lexer* lexer, Parser* parser, Stack* stack, std::string input) {
+    
+    auto output = parser->parse(lexer->lex(input), stack, lexer);
+    
+    for(auto& i: output)
+        std::cout << i << (i == "" ? "" : "\n");
+    
+}
 
 int main(int argc, const char * argv[]) {
     
@@ -25,9 +39,10 @@ int main(int argc, const char * argv[]) {
     std::string line;
     
     while(true) {
-        std::cout << ">> ";
+        std::cout << "> ";
         std::string input = "";
         std::getline(std::cin, input);
+<<<<<<< HEAD
         
         if(input == "quit") break;
         
@@ -53,6 +68,11 @@ int main(int argc, const char * argv[]) {
             std::string output = parser.parse(lexer.lex(input), &stack, &lexer);
             std::cout << output << (output == "" ? "" : "\n");
         }
+=======
+        if(input == "quit!") break;
+        
+        executeLine(&lexer, &parser, &stack, input);
+>>>>>>> Malaxiz/master
     }
     file.close();
     return 0;

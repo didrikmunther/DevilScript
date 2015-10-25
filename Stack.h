@@ -24,7 +24,11 @@ class Element {
 public:
     Element(std::string value) : value(value) {}
     
-    std::string toString()  { return value; }
+    std::string toString()  {
+        float floatValue = toFloat();
+        int intValue = static_cast<int>(floatValue);
+        return floatValue == intValue ? std::to_string(toInt()) : std::to_string(toFloat());
+    }
     int toInt()             { return std::stoi(value); }
     float toFloat()         { return std::stof(value); }
     

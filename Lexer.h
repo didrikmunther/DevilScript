@@ -19,6 +19,8 @@ enum Tokens {
     t_name_error = INT_MIN,
     
     t_end = 0,
+    t_m_open_from_file,
+    t_m_print,
     t_empty,
     t_name,
     t_equals,
@@ -26,9 +28,17 @@ enum Tokens {
     t_plus,
     t_minus,
     t_multi,
+<<<<<<< HEAD
     t_divide,
     t_plus_tt,
     t_minus_tt,
+=======
+    t_raised,
+    t_div,
+    t_openpar,
+    t_closedpar,
+    t_plus_equal
+>>>>>>> Malaxiz/master
 };
 
 class Lexer {
@@ -39,6 +49,10 @@ public:
     std::map<std::string, Tokens> keywords;
     
     std::vector<std::pair<Tokens, std::string>> lex(std::string input);
+    
+    std::vector<Tokens> getArithmeticOperators() {
+        return {t_plus, t_minus, t_multi, t_raised, t_div, t_closedpar};
+    }
     
 private:
     bool hasToken(std::string token);

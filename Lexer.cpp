@@ -8,12 +8,14 @@
 
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include "Lexer.h"
 
 
 Lexer::Lexer() {
     keywords = {
+<<<<<<< HEAD
                 {"=", Tokens::t_equals},
                 {"+", Tokens::t_plus},
                 {"-", Tokens::t_minus},
@@ -21,16 +23,34 @@ Lexer::Lexer() {
                 {"/", Tokens::t_divide},
                 {"++", Tokens::t_plus_tt},
                 {"--", Tokens::t_minus_tt},
+=======
+                {"file!", t_m_open_from_file},
+                {"print!", t_m_print},
+                {"=", t_equals},
+                {"+", t_plus},
+                {"-", t_minus},
+                {"*", t_multi},
+                {"**", t_raised},
+                {"/", t_div},
+                {"(", t_openpar},
+                {")", t_closedpar},
+                {"+=", t_plus_equal},
+>>>>>>> Malaxiz/master
                };
 }
 
 std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
+    
+    std::vector<std::string> allKeywords;
+    for(auto& i: keywords)
+        allKeywords.push_back(i.first);
     
     std::vector<std::string> splittedText;
     
     std::stringstream ss(input);
     std::string item;
     const char* delim = " ";
+    
     while (std::getline(ss, item, *delim)) {
         if(item == "")
             continue;
@@ -78,7 +98,7 @@ bool Lexer::tokenIsName(std::string token) {
 }
 
 bool Lexer::tokenIsNumeral(std::string token) {
-    std::string numerals = "1234567890.";
+    std::string numerals = "1234567890.-+";
     
     for(auto& i: token)
         if(numerals.find(i) == std::string::npos)

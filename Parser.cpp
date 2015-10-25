@@ -7,6 +7,8 @@
 //
 
 #include <iostream>
+#include <cmath>
+#include <fstream>
 
 #include "Parser.h"
 
@@ -15,56 +17,68 @@ Parser::Parser() {
     
 }
 
-std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
-    expected = {t_name, t_numeral, t_equals};
+std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
+    expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print};
     Tokens currentOperator = t_end;
-    bool equals = false;
     std::string currentVariable = "";
     
-    for(auto& i: tokens) {
+    auto i = tokens.begin();
+    while(i != tokens.end()) {
         
-        if(!isExpected(i, lexer))
+        if(!isExpected(*i, lexer))
             return error(stack);
         
-        switch(i.first) {
+        switch(i->first) {
                 
             case t_name:
                 if(currentVariable == "" && tokens[1].first == t_equals)
-                    currentVariable = i.second;
-                else if(!stack->hasVariable(i.second))
-                    return "Error: Variable not yet instantiated: " + i.second;
-                    
-                stack->pushElement(new Element(stack->variables[i.second.c_str()]));
+                    currentVariable = i->second;
+                else if(!stack->hasVariable(i->second))
+                    return {"Error: Variable not yet instantiated: " + i->second};
+                
+                stack->pushElement(new Element(stack->variables[i->second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
+<<<<<<< HEAD
                 setExpected({t_equals, t_plus, t_minus, t_multi, t_divide, t_plus_tt, t_minus_tt});
+=======
+                setExpected(lexer->getArithmeticOperators());
+                expected.push_back(t_equals);
+                expected.push_back(t_plus_equal);
+>>>>>>> Malaxiz/master
                 
                 break;
                 
             case t_numeral:
-                stack->pushElement(new Element(i.second));
+                stack->pushElement(new Element(i->second));
                 pushAritmethic(stack, currentOperator);
+<<<<<<< HEAD
                 setExpected({t_plus, t_minus, t_multi, t_divide ,t_plus_tt, t_minus_tt});
                 
+=======
+                setExpected(lexer->getArithmeticOperators());
+>>>>>>> Malaxiz/master
                 break;
                 
-            case t_plus:
-                currentOperator = t_plus;
-                
-                setExpected({t_numeral, t_name});
-                break;
-            
-            case t_plus_tt:
-                currentOperator = t_plus_tt;
-                
-                setExpected({t_numeral, t_name});
-                break;
-                
+            case t_div:
+            case t_multi:
             case t_minus:
-                currentOperator = t_minus;
+            case t_raised:
+            case t_plus:
+                currentOperator = i->first;
                 
-                setExpected({t_numeral, t_name});
+                setExpected({t_numeral, t_name, t_openpar});
                 break;
+                
+            case t_equals:
+                setExpected({t_name, t_numeral, t_openpar});
+                break;
+                
+            case t_empty:
+                stack->clearStack();
+                return {""};
+                break;
+<<<<<<< HEAD
             
             case t_minus_tt:
                 currentOperator = t_minus_tt;
@@ -74,41 +88,61 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 
             case t_multi:
                 currentOperator = t_multi;
-                
-                setExpected({t_numeral, t_name});
-                break;
-                
-            case t_divide:
-                currentOperator = t_divide;
-                
-                setExpected({t_numeral, t_name});
-                break;
-                
-            case t_equals:
-                equals = true;
-                
-                setExpected({t_name, t_numeral});
-                break;
-                
-            case t_empty:
-                stack->clearStack();
-                return "";
-                break;
+=======
+>>>>>>> Malaxiz/master
                 
             case t_end:
                 break;
                 
+            case t_openpar:
+                break;
+                
+            case t_closedpar:
+                break;
+                
+            case t_m_open_from_file:
+            {
+                std::string file;
+                if((i + 2) == tokens.end()) {
+                    std::cout << "[Open file]> ";
+                    std::getline(std::cin, file);
+                } else {
+                    file = (i + 1)->second;
+                }
+                
+                return openFromFile(file, stack, lexer);
+            }
+                break;
+                
+            case t_m_print:
+            {
+                if((i + 1) == tokens.end())
+                    return {""};
+                
+                std::string toReturn = "";
+                auto i2 = i + 1;
+                while(i2 != tokens.end() - 1) {
+                    toReturn += i2->second;
+                    toReturn += " ";
+                    i2++;
+                }
+                
+                return {toReturn};
+            }
+                break;
+                
             case t_name_error:
-                std::cout << "Error at lexing: " << i.second;
+                std::cout << "Error at lexing: " << i->second;
                 return error(stack);
                 break;
                 
             default:
-                std::cout << "Error: No such command (" << i.first << ", \"" << i.second << "\")";
+                std::cout << "Error: No such command (" << i->first << ", \"" << i->second << "\")\n";
                 return error(stack);
                 break;
         }
         
+        i++;
     }
     
     stack->variables[currentVariable.c_str()] = stack->toString(0);
@@ -117,6 +151,28 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
     
     auto toReturn = stack->toString(0);
     stack->clearStack();
+    
+    return {toReturn};
+}
+
+std::vector<std::string> Parser::openFromFile(std::string file, Stack* stack, Lexer* lexer) {
+    std::ifstream ifile;
+    std::string line;
+    
+    ifile.open(file);
+    if(!ifile || !ifile.is_open()) {
+        std::cout << "Error: could not open file: " << file << "\n";
+        return {""};
+    }
+    
+    std::vector<std::string> toReturn;
+    while(std::getline(ifile, line)) {
+        std::vector<std::string> output = parse(lexer->lex(line), stack, lexer);
+        toReturn.insert(toReturn.end(), output.begin(), output.end());
+    }
+    
+    ifile.close();
+    
     return toReturn;
 }
 
@@ -127,20 +183,9 @@ void Parser::pushCalculatedElement(Element* element, Stack* stack) {
 }
 
 void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
-    float result = 0;
+    if(currentOperator == t_end) return;
     
-    if(currentOperator == t_plus) {
-        float other = stack->toInt(-1);
-        result = stack->toInt(0) + other;
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
-    }
-    
-    if(currentOperator == t_plus_tt) {
-        float other = stack->toInt(-1);
-        result = stack->toInt(0) + stack->toInt(0) + other;
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
-    }
-    
+<<<<<<< HEAD
     if(currentOperator == t_minus) {
         float other = stack->toFloat(-1);
         result = other - stack->toFloat(0);
@@ -151,18 +196,39 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
         result = other - stack->toInt(0) - stack->toInt(0);
         pushCalculatedElement(new Element(std::to_string(result)), stack);
     }
+=======
+    float result = INT_MIN;
+    float a1 = stack->toFloat(-1);
+    float a2 = stack->toFloat(0);
+>>>>>>> Malaxiz/master
     
-    if(currentOperator == t_multi) {
-        float other = stack->toFloat(-1);
-        result = other * stack->toFloat(0);
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    switch(currentOperator) {
+            
+        case t_plus:
+            result = a1 + a2;
+            break;
+            
+        case t_minus:
+            result = a1 - a2;
+            break;
+            
+        case t_multi:
+            result = a1 * a2;
+            break;
+            
+        case t_raised:
+            result = pow(a1, a2);
+            break;
+            
+        case t_div:
+            result = a1 / a2;
+            break;
+            
+        default:
+            break;
     }
     
-    if(currentOperator == t_divide) {
-        float other = stack->toFloat(-1);
-        result = other / stack->toFloat(0);
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
-    }
+    pushCalculatedElement(new Element(std::to_string(result)), stack);
 }
 
 void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer) {
@@ -209,9 +275,9 @@ void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> 
     std::cout << "\n";
 }
 
-std::string Parser::error(Stack* stack) {
+std::vector<std::string> Parser::error(Stack* stack) {
     stack->clearStack();
-    return "";
+    return {""};
 }
 
 bool Parser::hasToken(Tokens token, std::vector<Tokens> tokens) {
