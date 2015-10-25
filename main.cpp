@@ -32,7 +32,7 @@ int main(int argc, const char * argv[]) {
     Stack stack;
     
     while(true) {
-        std::cout << "> ";
+        std::cout << "♕ ";
         std::string input = "";
         std::getline(std::cin, input);
         if(input == "quit!") break;
