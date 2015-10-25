@@ -37,14 +37,14 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 stack->pushElement(new Element(stack->variables[i.second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
-                setExpected({t_equals, t_plus, t_minus, t_multi, t_divide});
+                setExpected({t_equals, t_plus, t_minus, t_multi, t_divide, t_plus_tt});
                 
                 break;
                 
             case t_numeral:
                 stack->pushElement(new Element(i.second));
                 pushAritmethic(stack, currentOperator);
-                setExpected({t_plus, t_minus, t_multi, t_divide});
+                setExpected({t_plus, t_minus, t_multi, t_divide ,t_plus_tt});
                 
                 break;
                 
@@ -54,6 +54,12 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 setExpected({t_numeral, t_name});
                 break;
             
+            case t_plus_tt:
+                currentOperator = t_plus_tt;
+                
+                setExpected({t_numeral, t_name});
+                break;
+                
             case t_minus:
                 currentOperator = t_minus;
                 
@@ -97,11 +103,6 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 break;
         }
         
-//        if(previousVariable != "" && !stack->hasVariable(previousVariable) && currentOperator != t_equals) {
-//            previousVariable = "";
-//            //return "Error (2): Variable not yet instantiated: " + i.second;
-//        }
-        
     }
     
     stack->variables[currentVariable.c_str()] = stack->toString(0);
@@ -125,6 +126,12 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_plus) {
         float other = stack->toInt(-1);
         result = stack->toInt(0) + other;
+        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    }
+    
+    if(currentOperator == t_plus_tt) {
+        float other = stack->toInt(-1);
+        result = stack->toInt(0) + stack->toInt(0) + other;
         pushCalculatedElement(new Element(std::to_string(result)), stack);
     }
     
