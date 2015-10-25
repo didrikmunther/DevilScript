@@ -21,10 +21,11 @@ class Parser {
 public:
     Parser();
     
-    std::string parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer);
+    std::vector<std::string> parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer);
+    std::vector<std::string> openFromFile(std::string file, Stack* stack, Lexer* lexer);
     
     void expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer);
-    std::string error(Stack* stack);
+    std::vector<std::string> error(Stack* stack);
     
     void pushAritmethic(Stack* stack, Tokens currentOperator);
     void pushCalculatedElement(Element* element, Stack* stack);

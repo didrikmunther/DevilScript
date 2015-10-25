@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 #include "Parser.h"
 
@@ -16,34 +17,36 @@ Parser::Parser() {
     
 }
 
-std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
-    expected = {t_name, t_numeral, t_equals};
+std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
+    expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print};
     Tokens currentOperator = t_end;
     std::string currentVariable = "";
     
-    for(auto& i: tokens) {
+    auto i = tokens.begin();
+    while(i != tokens.end()) {
         
-        if(!isExpected(i, lexer))
+        if(!isExpected(*i, lexer))
             return error(stack);
         
-        switch(i.first) {
+        switch(i->first) {
                 
             case t_name:
                 if(currentVariable == "" && tokens[1].first == t_equals)
-                    currentVariable = i.second;
-                else if(!stack->hasVariable(i.second))
-                    return "Error: Variable not yet instantiated: " + i.second;
-                    
-                stack->pushElement(new Element(stack->variables[i.second.c_str()]));
+                    currentVariable = i->second;
+                else if(!stack->hasVariable(i->second))
+                    return {"Error: Variable not yet instantiated: " + i->second};
+                
+                stack->pushElement(new Element(stack->variables[i->second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
                 setExpected(lexer->getArithmeticOperators());
                 expected.push_back(t_equals);
+                expected.push_back(t_plus_equal);
                 
                 break;
                 
             case t_numeral:
-                stack->pushElement(new Element(i.second));
+                stack->pushElement(new Element(i->second));
                 pushAritmethic(stack, currentOperator);
                 setExpected(lexer->getArithmeticOperators());
                 break;
@@ -53,7 +56,7 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
             case t_minus:
             case t_raised:
             case t_plus:
-                currentOperator = i.first;
+                currentOperator = i->first;
                 
                 setExpected({t_numeral, t_name, t_openpar});
                 break;
@@ -64,30 +67,61 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 
             case t_empty:
                 stack->clearStack();
-                return "";
+                return {""};
                 break;
                 
             case t_end:
                 break;
                 
             case t_openpar:
-                
                 break;
                 
             case t_closedpar:
+                break;
                 
+            case t_m_open_from_file:
+            {
+                std::string file;
+                if((i + 2) == tokens.end()) {
+                    std::cout << "[Open file]> ";
+                    std::getline(std::cin, file);
+                } else {
+                    file = (i + 1)->second;
+                }
+                
+                return openFromFile(file, stack, lexer);
+            }
+                break;
+                
+            case t_m_print:
+            {
+                if((i + 1) == tokens.end())
+                    return {""};
+                
+                std::string toReturn = "";
+                auto i2 = i + 1;
+                while(i2 != tokens.end() - 1) {
+                    toReturn += i2->second;
+                    toReturn += " ";
+                    i2++;
+                }
+                
+                return {toReturn};
+            }
                 break;
                 
             case t_name_error:
-                std::cout << "Error at lexing: " << i.second;
+                std::cout << "Error at lexing: " << i->second;
                 return error(stack);
                 break;
                 
             default:
-                std::cout << "Error: No such command (" << i.first << ", \"" << i.second << "\")\n";
+                std::cout << "Error: No such command (" << i->first << ", \"" << i->second << "\")\n";
                 return error(stack);
                 break;
         }
+        
+        i++;
     }
     
     stack->variables[currentVariable.c_str()] = stack->toString(0);
@@ -96,6 +130,28 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
     
     auto toReturn = stack->toString(0);
     stack->clearStack();
+    
+    return {toReturn};
+}
+
+std::vector<std::string> Parser::openFromFile(std::string file, Stack* stack, Lexer* lexer) {
+    std::ifstream ifile;
+    std::string line;
+    
+    ifile.open(file);
+    if(!ifile || !ifile.is_open()) {
+        std::cout << "Error: could not open file: " << file << "\n";
+        return {""};
+    }
+    
+    std::vector<std::string> toReturn;
+    while(std::getline(ifile, line)) {
+        std::vector<std::string> output = parse(lexer->lex(line), stack, lexer);
+        toReturn.insert(toReturn.end(), output.begin(), output.end());
+    }
+    
+    ifile.close();
+    
     return toReturn;
 }
 
@@ -108,7 +164,7 @@ void Parser::pushCalculatedElement(Element* element, Stack* stack) {
 void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_end) return;
     
-    float result = 0;
+    float result = INT_MIN;
     float a1 = stack->toFloat(-1);
     float a2 = stack->toFloat(0);
     
@@ -185,9 +241,9 @@ void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> 
     std::cout << "\n";
 }
 
-std::string Parser::error(Stack* stack) {
+std::vector<std::string> Parser::error(Stack* stack) {
     stack->clearStack();
-    return "";
+    return {""};
 }
 
 bool Parser::hasToken(Tokens token, std::vector<Tokens> tokens) {

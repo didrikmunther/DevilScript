@@ -7,11 +7,21 @@
 //
 
 #include <iostream>
+#include <vector>
 
 #include "Lexer.h"
 #include "Parser.h"
 #include "Stack.h"
 
+
+void executeLine(Lexer* lexer, Parser* parser, Stack* stack, std::string input) {
+    
+    auto output = parser->parse(lexer->lex(input), stack, lexer);
+    
+    for(auto& i: output)
+        std::cout << i << (i == "" ? "" : "\n");
+    
+}
 
 int main(int argc, const char * argv[]) {
     
@@ -22,13 +32,12 @@ int main(int argc, const char * argv[]) {
     Stack stack;
     
     while(true) {
-        std::cout << ">> ";
+        std::cout << "> ";
         std::string input = "";
         std::getline(std::cin, input);
-        if(input == "quit") break;
+        if(input == "quit!") break;
         
-        std::string output = parser.parse(lexer.lex(input), &stack, &lexer);
-        std::cout << output << (output == "" ? "" : "\n");
+        executeLine(&lexer, &parser, &stack, input);
     }
     
     return 0;

@@ -19,6 +19,8 @@ enum Tokens {
     t_name_error = INT_MIN,
     
     t_end = 0,
+    t_m_open_from_file,
+    t_m_print,
     t_empty,
     t_name,
     t_equals,
@@ -30,6 +32,7 @@ enum Tokens {
     t_div,
     t_openpar,
     t_closedpar,
+    t_plus_equal
 };
 
 class Lexer {
