@@ -240,12 +240,8 @@ std::string getTokenSymbol(Tokens token) {
 void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer) {
     std::cout << "Error: Did not expect keyword of type: " << token.first << " (\"" << token.second << "\")";
     
-    std::string errorReason = "";
-    
-    errorReason = getTokenSymbol(token.first);
-    
+    std::string errorReason = getTokenSymbol(token.first);
     errorReason = errorReason == "" ? "" : " \"" + errorReason + "\"";
-    
     std::cout << errorReason << ", expected: ";
     
     for(auto& i: expTokens) {
@@ -256,7 +252,6 @@ void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> 
         }
         
         keyword = keyword == "" ? getTokenSymbol(i) : keyword;
-        
         std::cout << i << " (" << keyword << "), ";
     }
     

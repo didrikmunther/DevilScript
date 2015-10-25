@@ -16,7 +16,7 @@
 Lexer::Lexer() {
     keywords = {
                 {"file!", t_m_open_from_file},
-                {"print!", t_m_print},
+                {"ptc!", t_m_print},
                 {"=", t_equals},
                 {"+", t_plus},
                 {"-", t_minus},
