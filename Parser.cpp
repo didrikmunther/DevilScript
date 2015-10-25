@@ -18,9 +18,12 @@ Parser::Parser() {
 }
 
 std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
+    stack->clearStack();
+    
     expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print};
+    std::string assignVariable = "";
+    bool doAssignVariable = false;
     Tokens currentOperator = t_end;
-    std::string currentVariable = "";
     
     auto i = tokens.begin();
     while(i != tokens.end()) {
@@ -28,27 +31,44 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
         if(!isExpected(*i, lexer))
             return error(stack);
         
+        expected = {};
+        
         switch(i->first) {
                 
             case t_name:
-                if(currentVariable == "" && tokens[1].first == t_equals)
-                    currentVariable = i->second;
-                else if(!stack->hasVariable(i->second))
-                    return {"Error: Variable not yet instantiated: " + i->second};
+                if(i == tokens.begin()) {
+                    assignVariable = i->second;
+                    
+                    if((i + 1)->first != t_equals) {
+                        if(stack->hasVariable(i->second)) {
+                            stack->pushElement(new Element(stack->variables[i->second.c_str()]));
+                        }
+                        else
+                            return notInstantiatedError(i->second);
+                    }
+                    pushExpected({t_equals});
+                    
+                } else {
+                    if(stack->hasVariable(i->second)) {
+                        stack->pushElement(new Element(stack->variables[i->second.c_str()]));
+                        pushAritmethic(stack, currentOperator);
+                    }
+                    else
+                        return notInstantiatedError(i->second);
+                }
                 
-                stack->pushElement(new Element(stack->variables[i->second.c_str()]));
-                pushAritmethic(stack, currentOperator);
-                
-                setExpected(lexer->getArithmeticOperators());
-                expected.push_back(t_equals);
-                expected.push_back(t_plus_equal);
+                pushExpected(lexer->getArithmeticOperators());
+                pushExpected({t_end});
                 
                 break;
                 
             case t_numeral:
                 stack->pushElement(new Element(i->second));
+                
                 pushAritmethic(stack, currentOperator);
-                setExpected(lexer->getArithmeticOperators());
+                
+                pushExpected(lexer->getArithmeticOperators());
+                pushExpected({t_end});
                 break;
                 
             case t_div:
@@ -58,16 +78,18 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
             case t_plus:
                 currentOperator = i->first;
                 
-                setExpected({t_numeral, t_name, t_openpar});
+                pushExpected({t_numeral, t_name, t_openpar});
                 break;
                 
             case t_equals:
-                setExpected({t_name, t_numeral, t_openpar});
+                
+                doAssignVariable = true;
+                
+                pushExpected({t_name, t_numeral, t_openpar});
                 break;
                 
             case t_empty:
-                stack->clearStack();
-                return {""};
+                return error(stack);
                 break;
                 
             case t_end:
@@ -124,13 +146,10 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
         i++;
     }
     
-    stack->variables[currentVariable.c_str()] = stack->toString(0);
-    stack->popTopElement();
-    stack->pushElement(new Element(stack->variables[currentVariable.c_str()]));
+    if(doAssignVariable)
+        stack->variables[assignVariable.c_str()] = stack->toString(0);
     
     auto toReturn = stack->toString(0);
-    stack->clearStack();
-    
     return {toReturn};
 }
 
@@ -155,11 +174,6 @@ std::vector<std::string> Parser::openFromFile(std::string file, Stack* stack, Le
     return toReturn;
 }
 
-void Parser::pushCalculatedElement(Element* element, Stack* stack) {
-    stack->popTopElement();
-    stack->popTopElement();
-    stack->pushElement(element);
-}
 
 void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_end) return;
@@ -194,7 +208,33 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
             break;
     }
     
-    pushCalculatedElement(new Element(std::to_string(result)), stack);
+    stack->popTopElement();
+    stack->popTopElement();
+    stack->pushElement(new Element(std::to_string(result)));
+}
+
+std::string getTokenSymbol(Tokens token) {
+    switch(token) {
+        case t_name_error:
+            return "naming error";
+            break;
+            
+        case t_name:
+            return "name";
+            break;
+            
+        case t_numeral:
+            return "numeral";
+            break;
+            
+        case t_end:
+            return "end";
+            break;
+            
+        default:
+            return "";
+            break;
+    }
 }
 
 void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer) {
@@ -202,14 +242,7 @@ void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> 
     
     std::string errorReason = "";
     
-    switch(token.first) {
-        case t_name_error:
-            errorReason = "naming error";
-            break;
-            
-        default:
-            break;
-    }
+    errorReason = getTokenSymbol(token.first);
     
     errorReason = errorReason == "" ? "" : " \"" + errorReason + "\"";
     
@@ -222,23 +255,16 @@ void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> 
                 keyword = j.first;
         }
         
-        switch(i) {
-            case t_name:
-                keyword = "name";
-                break;
-                
-            case t_numeral:
-                keyword = "numeral";
-                break;
-                
-            default:
-                break;
-        }
+        keyword = keyword == "" ? getTokenSymbol(i) : keyword;
         
         std::cout << i << " (" << keyword << "), ";
     }
     
     std::cout << "\n";
+}
+
+std::vector<std::string> Parser::notInstantiatedError(std::string variable) {
+    return {"Error: Variable not yet instantiated: " + variable};
 }
 
 std::vector<std::string> Parser::error(Stack* stack) {
@@ -253,7 +279,7 @@ bool Parser::hasToken(Tokens token, std::vector<Tokens> tokens) {
 bool Parser::isExpected(std::pair<Tokens, std::string> token, Lexer* lexer) {
     if(hasToken((Tokens)-1, expected)) // If everything is expected
         return true;
-    else if(token.first == t_end || token.first == t_empty)
+    else if(token.first == t_empty)
         return true;
     else if(hasToken(token.first, expected))
         return true;
