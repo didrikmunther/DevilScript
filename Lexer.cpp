@@ -15,7 +15,10 @@
 Lexer::Lexer() {
     keywords = {
                 {"=", Tokens::t_equals},
-                {"+", Tokens::t_plus}
+                {"+", Tokens::t_plus},
+                {"-", Tokens::t_minus},
+                {"*", Tokens::t_multi},
+                {"/", Tokens::t_divide},
                };
 }
 
@@ -73,7 +76,7 @@ bool Lexer::tokenIsName(std::string token) {
 }
 
 bool Lexer::tokenIsNumeral(std::string token) {
-    std::string numerals = "1234567890";
+    std::string numerals = "1234567890.";
     
     for(auto& i: token)
         if(numerals.find(i) == std::string::npos)
