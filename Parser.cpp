@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 
 #include "Parser.h"
 
@@ -20,7 +21,6 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
     //std::vector<Tokens> expTokens = {(Tokens)-1}; // Expect everything in the beginning
     expected = {t_name, t_numeral, t_equals};
     Tokens currentOperator = t_end;
-    bool equals = false;
     std::string currentVariable = "";
     
     for(auto& i: tokens) {
@@ -39,27 +39,30 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
                 stack->pushElement(new Element(stack->variables[i.second.c_str()]));
                 pushAritmethic(stack, currentOperator);
                 
-                setExpected({t_equals, t_plus});
+                setExpected(lexer->getArithmeticOperators());
+                expected.push_back(t_equals);
                 
                 break;
                 
             case t_numeral:
                 stack->pushElement(new Element(i.second));
                 pushAritmethic(stack, currentOperator);
-                setExpected({t_plus});
                 
+                setExpected(lexer->getArithmeticOperators());
                 break;
                 
+            case t_div:
+            case t_multi:
+            case t_minus:
+            case t_raised:
             case t_plus:
-                currentOperator = t_plus;
+                currentOperator = i.first;
                 
-                setExpected({t_numeral, t_name});
+                setExpected({t_numeral, t_name, t_openpar});
                 break;
                 
             case t_equals:
-                equals = true;
-                
-                setExpected({t_name, t_numeral});
+                setExpected({t_name, t_numeral, t_openpar});
                 break;
                 
             case t_empty:
@@ -70,22 +73,24 @@ std::string Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, St
             case t_end:
                 break;
                 
+            case t_openpar:
+                
+                break;
+                
+            case t_closedpar:
+                
+                break;
+                
             case t_name_error:
                 std::cout << "Error at lexing: " << i.second;
                 return error(stack);
                 break;
                 
             default:
-                std::cout << "Error: No such command (" << i.first << ", \"" << i.second << "\")";
+                std::cout << "Error: No such command (" << i.first << ", \"" << i.second << "\")\n";
                 return error(stack);
                 break;
         }
-        
-//        if(previousVariable != "" && !stack->hasVariable(previousVariable) && currentOperator != t_equals) {
-//            previousVariable = "";
-//            //return "Error (2): Variable not yet instantiated: " + i.second;
-//        }
-        
     }
     
     stack->variables[currentVariable.c_str()] = stack->toString(0);
@@ -104,13 +109,39 @@ void Parser::pushCalculatedElement(Element* element, Stack* stack) {
 }
 
 void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
-    int result = 0;
+    if(currentOperator == t_end) return;
     
-    if(currentOperator == t_plus) {
-        int other = stack->toInt(-1);
-        result = stack->toInt(0) + other;
-        pushCalculatedElement(new Element(std::to_string(result)), stack);
+    float result = 0;
+    float a1 = stack->toFloat(-1);
+    float a2 = stack->toFloat(0);
+    
+    switch(currentOperator) {
+            
+        case t_plus:
+            result = a1 + a2;
+            break;
+            
+        case t_minus:
+            result = a1 - a2;
+            break;
+            
+        case t_multi:
+            result = a1 * a2;
+            break;
+            
+        case t_raised:
+            result = pow(a1, a2);
+            break;
+            
+        case t_div:
+            result = a1 / a2;
+            break;
+            
+        default:
+            break;
     }
+    
+    pushCalculatedElement(new Element(std::to_string(result)), stack);
 }
 
 void Parser::expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer) {

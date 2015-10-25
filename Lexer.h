@@ -23,7 +23,13 @@ enum Tokens {
     t_name,
     t_equals,
     t_numeral,
-    t_plus
+    t_plus,
+    t_minus,
+    t_multi,
+    t_raised,
+    t_div,
+    t_openpar,
+    t_closedpar,
 };
 
 class Lexer {
@@ -34,6 +40,10 @@ public:
     std::map<std::string, Tokens> keywords;
     
     std::vector<std::pair<Tokens, std::string>> lex(std::string input);
+    
+    std::vector<Tokens> getArithmeticOperators() {
+        return {t_plus, t_minus, t_multi, t_raised, t_div, t_closedpar};
+    }
     
 private:
     bool hasToken(std::string token);

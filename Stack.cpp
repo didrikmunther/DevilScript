@@ -19,7 +19,7 @@ Stack::~Stack() {
 
 Element* Stack::getElement(int index) {
     index = (int)elements.size() + index - 1;
-    if(index <= elements.size() || index >= 0)
+    if(index < elements.size() && index >= 0)
         return elements[index];
     
     return nullptr;
