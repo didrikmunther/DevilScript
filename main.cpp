@@ -13,19 +13,8 @@
 #include "Parser.h"
 #include "Stack.h"
 
-
-void executeLine(Lexer* lexer, Parser* parser, Stack* stack, std::string input) {
-    
-    auto output = parser->parse(lexer->lex(input), stack, lexer);
-    
-    for(auto& i: output)
-        std::cout << i << (i == "" ? "" : "\n");
-    
-}
-
-int main(int argc, const char * argv[]) {
-    
-    std::cout << "Started;\n";
+int programShell() {
+    std::cout << "D̴̜e͉̩͈̝͈̩͘v̩il̤̖̣S͏̪̼̪͈̻c̪̪͔͈͢r̶͓̘̺̱i̗̠̟p̮̖t̥̻̬͉ ͚̙͖̩s̼͙̗͖͓̫t̙̘̖̺̩a͟r̡̯̜̯t̝̤̻͙͝e̞̩d̰͕̩̞̥̫!͔̗̜͠ ̸̳̺͓͕̖̗ͅ>̜>̟̰\n\n";
     
     Lexer lexer;
     Parser parser;
@@ -35,10 +24,31 @@ int main(int argc, const char * argv[]) {
         std::cout << "> ";
         std::string input = "";
         std::getline(std::cin, input);
-        if(input == "quit!") break;
+        if(input == "quit!") return 0;
+        if(input == "restart!") return 1;
         
-        executeLine(&lexer, &parser, &stack, input);
+        auto output = parser.parse(lexer.lex(input), &stack, &lexer);
+        for(auto& i: output)
+            std::cout << i << (i == "" ? "" : "\n");
     }
+}
+
+int executeProgram() {
+    while(true) { // A code of 1 means to restart
+        int program = programShell();
+        
+        switch(program) {
+            case 1:
+                std::cout << "\n";
+                break;
+                
+            default:
+                return program;
+        }
+    }
+}
+
+int main(int argc, const char * argv[]) {
     
-    return 0;
+    return executeProgram();
 }

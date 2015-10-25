@@ -2,5 +2,5 @@ a = 5
 b = 10
 c = a + b
 c = c / 1.2
-print! This is a line that is printed
-print! This is another line that is printed
+ptc! This is a line that is printed
+ptc! This is another line that is printed
