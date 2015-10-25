@@ -25,10 +25,10 @@ public:
     std::vector<std::string> openFromFile(std::string file, Stack* stack, Lexer* lexer);
     
     void expError(std::pair<Tokens, std::string> token, std::vector<Tokens> expTokens, Lexer* lexer);
+    std::vector<std::string> notInstantiatedError(std::string variable);
     std::vector<std::string> error(Stack* stack);
     
     void pushAritmethic(Stack* stack, Tokens currentOperator);
-    void pushCalculatedElement(Element* element, Stack* stack);
     
     std::vector<Tokens> expected;
     
@@ -36,8 +36,8 @@ private:
     bool hasToken(Tokens token, std::vector<Tokens> tokens);
     bool isExpected(std::pair<Tokens, std::string> token, Lexer* lexer);
     
-    void setExpected(std::vector<Tokens> expected) {
-        this->expected = expected;
+    void pushExpected(std::vector<Tokens> newExpected) {
+        expected.insert(expected.end(), newExpected.begin(), newExpected.end());
     }
     
 };
