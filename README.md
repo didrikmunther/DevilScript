@@ -1,5 +1,5 @@
 # DevilScript
-![alt tag](http://i.imgur.com/jlov71r.png)
+![alt tag](http://i.imgur.com/Nb57BU5.png)
 
 ##### Variables
 `a = 5` Creates a variable named "a" with value "5"
