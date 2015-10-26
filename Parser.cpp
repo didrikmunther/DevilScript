@@ -20,7 +20,7 @@ Parser::Parser() {
 std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
     stack->clearStack();
     
-    expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print};
+    expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print , t_cmd};
     std::string assignVariable = "";
     bool doAssignVariable = false;
     Tokens currentOperator = t_end;
@@ -70,7 +70,9 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
                 pushExpected(lexer->getArithmeticOperators());
                 pushExpected({t_end});
                 break;
-                
+            
+
+            
             case t_div:
             case t_multi:
             case t_minus:
@@ -112,6 +114,21 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
                 }
                 
                 return openFromFile(file, stack, lexer);
+            }
+                break;
+            
+            case t_cmd:
+            {
+                std::string toReturn = "";
+                auto i2 = i + 1;
+                while(i2 != tokens.end() - 1) {
+                    toReturn += i2->second;
+                    toReturn += " ";
+                    i2++;
+                }
+                std::cout << toReturn.c_str() << "\n";
+                system(toReturn.c_str());
+                return {};
             }
                 break;
                 
@@ -179,7 +196,7 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_end) return;
     
     float result = INT_MIN;
-    float a1 = stack->toFloat(-1);
+    float a1 = stack->toFloat(0);
     float a2 = stack->toFloat(0);
     
     switch(currentOperator) {
@@ -203,7 +220,7 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
         case t_div:
             result = a1 / a2;
             break;
-            
+        
         default:
             break;
     }

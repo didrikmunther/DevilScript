@@ -1,0 +1,2 @@
+get! scripts/test2.ds
+a = 5

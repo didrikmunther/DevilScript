@@ -32,7 +32,8 @@ enum Tokens {
     t_div,
     t_openpar,
     t_closedpar,
-    t_plus_equal
+    t_plus_equal,
+    t_cmd,
 };
 
 class Lexer {

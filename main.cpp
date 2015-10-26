@@ -14,14 +14,15 @@
 #include "Stack.h"
 
 int programShell() {
-    std::cout << "D̴̜e͉̩͈̝͈̩͘v̩il̤̖̣S͏̪̼̪͈̻c̪̪͔͈͢r̶͓̘̺̱i̗̠̟p̮̖t̥̻̬͉ ͚̙͖̩s̼͙̗͖͓̫t̙̘̖̺̩a͟r̡̯̜̯t̝̤̻͙͝e̞̩d̰͕̩̞̥̫!͔̗̜͠ ̸̳̺͓͕̖̗ͅ>̜>̟̰\n\n";
+    std::cout << "DevilScript started\n\n";
+    
     
     Lexer lexer;
     Parser parser;
     Stack stack;
     
     while(true) {
-        std::cout << "♕ ";
+        std::cout << "> ";
         std::string input = "";
         std::getline(std::cin, input);
         if(input == "quit!") return 0;
@@ -29,12 +30,12 @@ int programShell() {
         
         auto output = parser.parse(lexer.lex(input), &stack, &lexer);
         for(auto& i: output)
-            std::cout << i << (i == "" ? "" : "\n");
+            std::cout << i << (i == " " ? "" : "\n");
     }
 }
 
 int executeProgram() {
-    while(true) { // A code of 1 means to restart
+    while(true) {   // A code of 1 means to restart
         int program = programShell();
         
         switch(program) {
@@ -49,6 +50,5 @@ int executeProgram() {
 }
 
 int main(int argc, const char * argv[]) {
-    
     return executeProgram();
 }

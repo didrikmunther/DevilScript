@@ -15,7 +15,7 @@
 
 Lexer::Lexer() {
     keywords = {
-                {"file!", t_m_open_from_file},
+                {"get!", t_m_open_from_file},
                 {"ptc!", t_m_print},
                 {"=", t_equals},
                 {"+", t_plus},
@@ -26,6 +26,7 @@ Lexer::Lexer() {
                 {"(", t_openpar},
                 {")", t_closedpar},
                 {"+=", t_plus_equal},
+                {"cmd!", t_cmd},
                };
 }
 
@@ -50,7 +51,7 @@ std::vector<std::pair<Tokens, std::string>> Lexer::lex(std::string input) {
     
     std::vector<std::pair<Tokens, std::string>> tokens;
     
-    if(input.find_first_not_of(' ') == std::string::npos) // if only spaces
+    if(input.find_first_not_of(" ") == std::string::npos) // if only spaces
         tokens.push_back(std::make_pair(t_empty, ""));
     else {
         for(auto& i: splittedText) {
@@ -83,7 +84,6 @@ bool Lexer::tokenIsName(std::string token) {
     for(auto& i: token)
         if(allowedCharacters.find(i) == std::string::npos)
             return false;
-    
     return true;
 }
 
