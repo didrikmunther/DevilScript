@@ -10,8 +10,6 @@
 * `-` : `10 - 5`  is equal to  `5`
 * `*` : `10 * 5`  is equal to  `50`
 * `/` : `10 / 5`  is equal to  `2`
-* `++` : `10 ++ 5`  is equal to  `20`
-* `--` : `10 -- 5`  is equal to  `0`
 
 ##### Other
 * `ptc! this will be printed` print to console
