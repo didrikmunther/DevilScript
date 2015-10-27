@@ -16,13 +16,12 @@
 int programShell() {
     std::cout << "DevilScript started\n\n";
     
-    
     Lexer lexer;
     Parser parser;
     Stack stack;
     
     while(true) {
-        std::cout << "> ";
+        std::cout << "<%> ";
         std::string input = "";
         std::getline(std::cin, input);
         if(input == "quit!") return 0;

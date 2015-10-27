@@ -20,7 +20,7 @@ Parser::Parser() {
 std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string>> tokens, Stack* stack, Lexer* lexer) {
     stack->clearStack();
     
-    expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print , t_cmd};
+    expected = {t_name, t_numeral, t_equals, t_m_open_from_file, t_m_print , t_cmd , t_comment};
     std::string assignVariable = "";
     bool doAssignVariable = false;
     Tokens currentOperator = t_end;
@@ -131,6 +131,10 @@ std::vector<std::string> Parser::parse(std::vector<std::pair<Tokens, std::string
                 return {};
             }
                 break;
+            
+            case t_comment:
+                return {};
+                break;
                 
             case t_m_print:
             {
@@ -196,7 +200,7 @@ void Parser::pushAritmethic(Stack* stack,Tokens currentOperator) {
     if(currentOperator == t_end) return;
     
     float result = INT_MIN;
-    float a1 = stack->toFloat(0);
+    float a1 = stack->toFloat(-1);
     float a2 = stack->toFloat(0);
     
     switch(currentOperator) {

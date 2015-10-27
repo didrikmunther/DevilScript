@@ -27,6 +27,7 @@ Lexer::Lexer() {
                 {")", t_closedpar},
                 {"+=", t_plus_equal},
                 {"cmd!", t_cmd},
+                {"//", t_comment},
                };
 }
 
