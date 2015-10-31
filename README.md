@@ -6,10 +6,16 @@
 
 
 ##### Operations
-* `+` : `10 + 5`  is equal to  `15`
-* `-` : `10 - 5`  is equal to  `5`
-* `*` : `10 * 5`  is equal to  `50`
-* `/` : `10 / 5`  is equal to  `2`
+```
+10 + 5    // Plus
+10 - 5    // Minus
+10 * 5    // Multiply
+10 / 5    // Divide
+10 ** 5   // Raise
+```
 
 ##### Other
-* `ptc! this will be printed` print to console
+```
+ptc! Hello there      // print to console
+cmd! ls               // run shell command
+```
